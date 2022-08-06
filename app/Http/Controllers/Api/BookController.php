@@ -3,11 +3,12 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\BookStoreRequest;
 use App\Http\Resources\BookResource;
 use App\Models\Author;
 use App\Models\Book;
 use App\Models\Publisher;
-use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
 
 class BookController extends Controller
@@ -15,9 +16,9 @@ class BookController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return Response
+     * @return AnonymousResourceCollection
      */
-    public function index(): Response
+    public function index(): AnonymousResourceCollection
     {
         return BookResource::collection(Book::all());
     }
@@ -25,64 +26,64 @@ class BookController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param Request $request
+     * @param BookStoreRequest $request
      * @return BookResource
      */
-    public function store(Request $request): BookResource
+    public function store(BookStoreRequest $request): BookResource
     {
-        $bookInfoFromRequest = $request->all();
+        $validatedRequest = $request->validated();
 
         $bookModel = Book::firstOrCreate([
-            'name' => $bookInfoFromRequest['name']
+            'name' => $validatedRequest['name']
         ]);
 
         $publisherModel = Publisher::firstOrCreate([
-            'name' => $request->all()['publisher']
+            'name' => $validatedRequest['publisher']
         ]);
 
         $bookModel->publishers()->syncWithoutDetaching($publisherModel);
 
-        foreach ($request->all()['authors'] as $author) {
-            $authorModel = Author::firstOrCreate([
+        foreach ($validatedRequest['authors'] as $author) {
+            $itemAuthorModel = Author::firstOrCreate([
                 'name' => $author['name'],
             ]);
-            $bookModel->authors()->syncWithoutDetaching($authorModel);
+            $bookModel->authors()->syncWithoutDetaching($itemAuthorModel);
         }
 
         return new BookResource($bookModel);
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      *
-     * @param Request $request
-     * @param  int  $id
-     * @return Response
+     * @param BookStoreRequest $request
+     * @param Book $book
+     * @return BookResource
      */
-    public function update(Request $request, $id)
+    public function update(BookStoreRequest $request, Book $book): BookResource
     {
-        //
+        $book->update($request->validated());
+
+        return new BookResource($book);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param Book $book
      * @return Response
      */
-    public function destroy($id)
+    public function destroy(Book $book): Response
     {
-        //
+        $book->authors()->detach();
+        Author::doesntHave('books')->delete();
+
+        $book->publishers()->detach();
+        Publisher::doesntHave('books')->delete();
+
+        $book->delete();
+
+
+        return response(null, Response::HTTP_NO_CONTENT);
     }
 }
