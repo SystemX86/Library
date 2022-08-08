@@ -1,0 +1,161 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Book library OpenApi documentation",
+        "description": "Swagger OpenApi",
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/api/V1/book": {
+            "get": {
+                "tags": [
+                    "Book"
+                ],
+                "summary": "Get list of Books",
+                "description": "Returns list of Books with Authors and Publishers",
+                "operationId": "817de152b7992857f4ce21ab4d545076",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            }
+        },
+        "/api/V1/book/": {
+            "post": {
+                "tags": [
+                    "Book"
+                ],
+                "summary": "Store Book",
+                "description": "Create new book",
+                "operationId": "62a00cda481fc394f09b816aca1e6eff",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "White Fang"
+                                    },
+                                    "authors": {
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "Macmillan"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "publisher": {
+                                        "type": "string",
+                                        "example": "Jack London"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            }
+        },
+        "/api/V1/book/{book_id}": {
+            "put": {
+                "tags": [
+                    "Book"
+                ],
+                "summary": "Update Book",
+                "description": "Update the specified resource in storage.",
+                "operationId": "1d9f5bf154ac5f6440ab91d2b873a297",
+                "parameters": [
+                    {
+                        "name": "book_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "White Fang"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Book"
+                ],
+                "summary": "Delete Book",
+                "description": "Remove the specified resource from storage.",
+                "operationId": "2796564992616f5a4cc434ce37455563",
+                "parameters": [
+                    {
+                        "name": "book_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "404": {
+                        "description": "not found"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            }
+        }
+    }
+}
